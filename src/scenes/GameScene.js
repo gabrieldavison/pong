@@ -23,12 +23,18 @@ export default class GameScene extends Phaser.Scene {
   }
 
   create() {
-    //Creates objects
+    //Creates game objects
     this.player1 = this.createPlayer(30);
     this.player2 = this.createPlayer(770);
     this.ball = this.createBall();
 
-    // Adds colliders
+    //creates boundry objects
+    const top = this.add.rectangle(400, 0, 800, 5, 0x6666ff);
+    this.physics.add.existing(top);
+
+    const bottom = this.add.rectangle(0, 395, 800, 5);
+    this.physics.add.existing(bottom);
+    // Adds colliders for paddle and ball
     this.physics.add.collider(
       this.player1,
       this.ball,
@@ -44,12 +50,25 @@ export default class GameScene extends Phaser.Scene {
       this
     );
 
-    // this.physics.add.collider(this.player1, this.ball);
-    // this.physics.add.collider(this.player2, this.ball);
+    //Add colliders for boundary objects
+    this.physics.add.collider(
+      top,
+      this.ball,
+      () => console.log("ding"),
+      null,
+      this
+    );
+    this.physics.add.collider(
+      top,
+      this.ball,
+      () => console.log("dong"),
+      null,
+      this
+    );
 
     //Set up player 1 controls
     this.setPlayerInputKeys(this.player1Input, "W", "S");
-    this.setPlayerInputKeys(this.player2Input, "UP", "DOWN");
+    // this.setPlayerInputKeys(this.player2Input, "UP", "DOWN");
 
     //Sets up ScoreLabels
     this.player1ScoreLabel = this.createScoreLabel(10, 10, 0);
@@ -57,8 +76,12 @@ export default class GameScene extends Phaser.Scene {
   }
 
   update() {
+    //Check for player input
     this.checkPlayerInput(this.player1Input, this.player1);
-    this.checkPlayerInput(this.player2Input, this.player2);
+    // this.checkPlayerInput(this.player2Input, this.player2);
+
+    //Moves the AI
+    this.moveAi(this.player2);
 
     if (this.ball.x >= 795) {
       this.player1ScoreLabel.add(1);
@@ -125,5 +148,13 @@ export default class GameScene extends Phaser.Scene {
     this.ball.setVelocityX(
       (this.ball.body.velocity.x += 0.1 * this.ball.body.velocity.x)
     );
+  }
+
+  moveAi(player) {
+    if (this.ball.y > player.y + 40 && this.ball.x > 200) {
+      player.setVelocityY(200);
+    } else if (this.ball.y < player.y - 40 && this.ball.x > 200) {
+      player.setVelocityY(-200);
+    }
   }
 }
