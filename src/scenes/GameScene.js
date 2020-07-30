@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import ScoreLabel from "../ui/ScoreLabel";
+import playNote from "../sound/synthesizer";
 
 export default class GameScene extends Phaser.Scene {
   constructor() {
@@ -29,12 +30,10 @@ export default class GameScene extends Phaser.Scene {
     this.ball = this.createBall();
 
     //creates boundry objects
-    const top = this.add.rectangle(400, 0, 800, 5, 0x6666ff);
-    this.physics.add.existing(top);
+    const topBoundary = this.createBoundary(400, 0);
+    const bottomBoundary = this.createBoundary(400, 399);
 
-    const bottom = this.add.rectangle(0, 395, 800, 5);
-    this.physics.add.existing(bottom);
-    // Adds colliders for paddle and ball
+    // Adds colliders for paddle and ball with a callback function that triggers the synthesizer
     this.physics.add.collider(
       this.player1,
       this.ball,
@@ -52,23 +51,22 @@ export default class GameScene extends Phaser.Scene {
 
     //Add colliders for boundary objects
     this.physics.add.collider(
-      top,
+      topBoundary,
       this.ball,
-      () => console.log("ding"),
+      () => playNote(),
       null,
       this
     );
     this.physics.add.collider(
-      top,
+      bottomBoundary,
       this.ball,
-      () => console.log("dong"),
+      () => playNote(),
       null,
       this
     );
 
     //Set up player 1 controls
     this.setPlayerInputKeys(this.player1Input, "W", "S");
-    // this.setPlayerInputKeys(this.player2Input, "UP", "DOWN");
 
     //Sets up ScoreLabels
     this.player1ScoreLabel = this.createScoreLabel(10, 10, 0);
@@ -78,7 +76,6 @@ export default class GameScene extends Phaser.Scene {
   update() {
     //Check for player input
     this.checkPlayerInput(this.player1Input, this.player1);
-    // this.checkPlayerInput(this.player2Input, this.player2);
 
     //Moves the AI
     this.moveAi(this.player2);
@@ -156,5 +153,13 @@ export default class GameScene extends Phaser.Scene {
     } else if (this.ball.y < player.y - 40 && this.ball.x > 200) {
       player.setVelocityY(-200);
     }
+  }
+
+  createBoundary(x, y) {
+    const boundary = this.physics.add.sprite(x, y);
+    boundary.setSize(800, 5);
+    boundary.setImmovable(true);
+    boundary.body.setAllowGravity(false);
+    return boundary;
   }
 }

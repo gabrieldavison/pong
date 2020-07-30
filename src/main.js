@@ -5,6 +5,9 @@ import GameScene from "./scenes/GameScene";
 
 const config = {
   type: Phaser.AUTO,
+  audio: {
+    noAudio: true,
+  },
   width: 800,
   height: 400,
   physics: {
@@ -13,6 +16,7 @@ const config = {
       gravity: { y: 200 },
     },
   },
+
   scene: [GameScene, HelloWorldScene],
 };
 
