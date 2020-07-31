@@ -28,11 +28,13 @@ export default class GameScene extends Phaser.Scene {
 
   create() {
     //Creates game objects
-    // this.player1 = this.createPlayer(30);
     this.ball = this.createBall();
-    //Set up player 1 controls
-    this.setPlayerInputKeys(this.player1Input, "W", "S");
-    this.player1 = new HumanPlayer(this.physics, 30, this.player1Input);
+
+    //Set up player 1 as human
+    // this.player1 = new HumanPlayer(this.physics, 30, this);
+
+    //Set up player1 as computer
+    this.player1 = new ComputerPlayer(this.physics, 30, this.ball);
 
     // this.player2 = this.createPlayer(770);
     this.player2 = new ComputerPlayer(this.physics, 770, this.ball);
@@ -111,16 +113,6 @@ export default class GameScene extends Phaser.Scene {
     }
   }
 
-  createPlayer(x) {
-    const player = this.physics.add.sprite(x, 200, "paddle").setScale(0.3);
-    player.setImmovable(true);
-    player.setCollideWorldBounds(true);
-    player.body.setAllowGravity(false);
-    return player;
-  }
-
-  createComputerPlayer(x) {}
-
   createBall(speed) {
     const ball = this.physics.add.sprite(400, 200, "ball");
     ball.body.setAllowGravity(false);
@@ -129,21 +121,6 @@ export default class GameScene extends Phaser.Scene {
     ball.setVelocityY(Phaser.Math.Between(-100, 100));
     ball.setBounce(1);
     return ball;
-  }
-
-  setPlayerInputKeys(playerInput, up, down) {
-    playerInput.up = this.input.keyboard.addKey(up);
-    playerInput.down = this.input.keyboard.addKey(down);
-  }
-
-  checkPlayerInput(playerInput, player) {
-    if (playerInput.up.isDown) {
-      player.setVelocityY(-200);
-    } else if (playerInput.down.isDown) {
-      player.setVelocityY(200);
-    } else if (playerInput.down.isUp && playerInput.up.isUp) {
-      player.setVelocityY(0);
-    }
   }
 
   resetGame() {
@@ -170,14 +147,6 @@ export default class GameScene extends Phaser.Scene {
       //add 10% to ball velocity every time it collides with player
       (this.ball.body.velocity.x += 0.1 * this.ball.body.velocity.x)
     );
-  }
-
-  moveAi(player) {
-    if (this.ball.y > player.y + 40 && this.ball.x > 200) {
-      player.setVelocityY(200);
-    } else if (this.ball.y < player.y - 40 && this.ball.x > 200) {
-      player.setVelocityY(-200);
-    }
   }
 
   createBoundary(x, y) {

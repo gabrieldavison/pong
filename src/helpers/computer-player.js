@@ -17,12 +17,12 @@ class ComputerPlayer extends Player {
       this.ball.y > this.sprite.y + 40 &&
       this.ball.x > 400 * this.sideMultiplier
     ) {
-      this.sprite.setVelocityY(200 * this.sideMultiplier);
+      this.sprite.setVelocityY(200);
     } else if (
       this.ball.y < this.sprite.y - 40 &&
       this.ball.x > 400 * this.sideMultiplier
     ) {
-      this.sprite.setVelocityY(-200 * this.sideMultiplier);
+      this.sprite.setVelocityY(-200);
     } else if (this.ball.x < 400) {
       this.sprite.setVelocityY(0);
     }

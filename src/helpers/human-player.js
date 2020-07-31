@@ -1,9 +1,9 @@
 import Player from "./player";
 
 class HumanPlayer extends Player {
-  constructor(physics, x, input) {
+  constructor(physics, x, scene) {
     super(physics, x);
-    this.input = input;
+    this.input = this.setInputKeys("w", "s", scene);
   }
   movePlayer() {
     if (this.input.up.isDown) {
@@ -13,6 +13,12 @@ class HumanPlayer extends Player {
     } else if (this.input.down.isUp && this.input.up.isUp) {
       this.sprite.setVelocityY(0);
     }
+  }
+  setInputKeys(up, down, scene) {
+    const input = {};
+    input.up = scene.input.keyboard.addKey(up);
+    input.down = scene.input.keyboard.addKey(down);
+    return input;
   }
 }
 
