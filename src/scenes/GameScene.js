@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import ScoreLabel from "../ui/ScoreLabel";
 import playNote from "../sound/synthesizer";
 import Sequencer from "../sound/sequencer";
-import { HumanPlayer } from "../helpers/player";
+import HumanPlayer from "../helpers/human-player";
 
 export default class GameScene extends Phaser.Scene {
   constructor() {
@@ -27,7 +27,12 @@ export default class GameScene extends Phaser.Scene {
 
   create() {
     //Creates game objects
-    this.player1 = this.createPlayer(30);
+    // this.player1 = this.createPlayer(30);
+
+    //Set up player 1 controls
+    this.setPlayerInputKeys(this.player1Input, "W", "S");
+    this.player1 = new HumanPlayer(this.physics, 30, this.player1Input);
+
     this.player2 = this.createPlayer(770);
     this.ball = this.createBall();
 
@@ -52,9 +57,9 @@ export default class GameScene extends Phaser.Scene {
 
     // Adds colliders for paddle and ball with a callback function that triggers the synthesizer
     this.physics.add.collider(
-      this.player1,
+      this.player1.sprite,
       this.ball,
-      () => this.ballCollision(this.player1),
+      () => this.ballCollision(this.player1.sprite),
       null,
       this
     );
@@ -82,9 +87,6 @@ export default class GameScene extends Phaser.Scene {
       this
     );
 
-    //Set up player 1 controls
-    this.setPlayerInputKeys(this.player1Input, "W", "S");
-
     //Sets up ScoreLabels
     this.player1ScoreLabel = this.createScoreLabel(10, 10, 0);
     this.player2ScoreLabel = this.createScoreLabel(775, 10, 0);
@@ -92,7 +94,8 @@ export default class GameScene extends Phaser.Scene {
 
   update() {
     //Check for player input
-    this.checkPlayerInput(this.player1Input, this.player1);
+    // this.checkPlayerInput(this.player1Input, this.player1);
+    this.player1.movePlayer();
 
     //Moves the AI
     this.moveAi(this.player2);

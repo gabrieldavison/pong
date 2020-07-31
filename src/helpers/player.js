@@ -1,5 +1,5 @@
 class Player {
-  constructor(physics) {
+  constructor(physics, x) {
     this.sprite = physics.add.sprite(x, 200, "paddle").setScale(0.3);
     this.sprite.setImmovable(true);
     this.sprite.setCollideWorldBounds(true);
@@ -10,19 +10,4 @@ class Player {
   }
 }
 
-class HumanPlayer extends Player {
-  constructor(physics) {
-    super(physics);
-  }
-  checkInput(playerInput) {
-    if (playerInput.up.isDown) {
-      this.sprite.setVelocityY(-200);
-    } else if (playerInput.down.isDown) {
-      this.sprite.setVelocityY(200);
-    } else if (playerInput.down.isUp && playerInput.up.isUp) {
-      this.sprite.setVelocityY(0);
-    }
-  }
-}
-
-export { HumanPlayer };
+export default Player;
