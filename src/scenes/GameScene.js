@@ -3,6 +3,7 @@ import ScoreLabel from "../ui/ScoreLabel";
 import playNote from "../sound/synthesizer";
 import Sequencer from "../sound/sequencer";
 import HumanPlayer from "../helpers/human-player";
+import ComputerPlayer from "../helpers/computer-player";
 
 export default class GameScene extends Phaser.Scene {
   constructor() {
@@ -28,13 +29,13 @@ export default class GameScene extends Phaser.Scene {
   create() {
     //Creates game objects
     // this.player1 = this.createPlayer(30);
-
+    this.ball = this.createBall();
     //Set up player 1 controls
     this.setPlayerInputKeys(this.player1Input, "W", "S");
     this.player1 = new HumanPlayer(this.physics, 30, this.player1Input);
 
-    this.player2 = this.createPlayer(770);
-    this.ball = this.createBall();
+    // this.player2 = this.createPlayer(770);
+    this.player2 = new ComputerPlayer(this.physics, 770, this.ball);
 
     //creates boundary objects
     const topBoundary = this.createBoundary(400, 0);
@@ -64,9 +65,9 @@ export default class GameScene extends Phaser.Scene {
       this
     );
     this.physics.add.collider(
-      this.player2,
+      this.player2.sprite,
       this.ball,
-      () => this.ballCollision(this.player2),
+      () => this.ballCollision(this.player2.sprite),
       null,
       this
     );
@@ -97,8 +98,9 @@ export default class GameScene extends Phaser.Scene {
     // this.checkPlayerInput(this.player1Input, this.player1);
     this.player1.movePlayer();
 
+    this.player2.movePlayer();
     //Moves the AI
-    this.moveAi(this.player2);
+    // this.moveAi(this.player2);
 
     if (this.ball.x >= 795) {
       this.player1ScoreLabel.add(1);
