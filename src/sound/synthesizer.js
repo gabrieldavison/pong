@@ -6,13 +6,13 @@ document.body.addEventListener("click", () => {
   console.log("audio start");
 });
 //Creates FM synth
-const synth = new Tone.FMSynth().toDestination();
+const synth = new Tone.PolySynth(Tone.FMSynth).toDestination();
 const now = Tone.now();
 
 //Triggers a note immediately
-function playNote() {
+function playNote(note, length) {
   console.log("note");
-  synth.triggerAttackRelease("C4", "8n", now);
+  synth.triggerAttackRelease(note, length);
 }
 
 export default playNote;

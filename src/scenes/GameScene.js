@@ -1,6 +1,8 @@
 import Phaser from "phaser";
 import ScoreLabel from "../ui/ScoreLabel";
 import playNote from "../sound/synthesizer";
+import Sequencer from "../sound/sequencer";
+import { HumanPlayer } from "../helpers/player";
 
 export default class GameScene extends Phaser.Scene {
   constructor() {
@@ -29,9 +31,24 @@ export default class GameScene extends Phaser.Scene {
     this.player2 = this.createPlayer(770);
     this.ball = this.createBall();
 
-    //creates boundry objects
+    //creates boundary objects
     const topBoundary = this.createBoundary(400, 0);
     const bottomBoundary = this.createBoundary(400, 399);
+
+    //Creates Sequencers
+
+    const topSeq = new Sequencer(
+      ["c4", "d4", "e4", "g4", "a4"],
+      0,
+      playNote,
+      "8n"
+    );
+    const bottomSeq = new Sequencer(
+      ["c4", "d4", "e4", "g4", "a4"],
+      2,
+      playNote,
+      "8n"
+    );
 
     // Adds colliders for paddle and ball with a callback function that triggers the synthesizer
     this.physics.add.collider(
@@ -53,14 +70,14 @@ export default class GameScene extends Phaser.Scene {
     this.physics.add.collider(
       topBoundary,
       this.ball,
-      () => playNote(),
+      () => topSeq.playNext(),
       null,
       this
     );
     this.physics.add.collider(
       bottomBoundary,
       this.ball,
-      () => playNote(),
+      () => bottomSeq.playNext(),
       null,
       this
     );
@@ -96,6 +113,8 @@ export default class GameScene extends Phaser.Scene {
     player.body.setAllowGravity(false);
     return player;
   }
+
+  createComputerPlayer(x) {}
 
   createBall(speed) {
     const ball = this.physics.add.sprite(400, 200, "ball");
@@ -143,6 +162,7 @@ export default class GameScene extends Phaser.Scene {
   ballCollision(player) {
     this.ball.setVelocityY(Math.random() * 50 + player.body.velocity.y);
     this.ball.setVelocityX(
+      //add 10% to ball velocity every time it collides with player
       (this.ball.body.velocity.x += 0.1 * this.ball.body.velocity.x)
     );
   }
@@ -157,7 +177,7 @@ export default class GameScene extends Phaser.Scene {
 
   createBoundary(x, y) {
     const boundary = this.physics.add.sprite(x, y);
-    boundary.setSize(800, 5);
+    boundary.setSize(800, 10);
     boundary.setImmovable(true);
     boundary.body.setAllowGravity(false);
     return boundary;
