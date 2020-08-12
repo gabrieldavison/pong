@@ -4,7 +4,7 @@ import playNote from "../sound/synthesizer";
 import Sequencer from "../sound/sequencer";
 import HumanPlayer from "../helpers/human-player";
 import ComputerPlayer from "../helpers/computer-player";
-
+import SequencerDisplay from "../helpers/sequencer-display";
 export default class GameScene extends Phaser.Scene {
   constructor() {
     super("game-scene");
@@ -34,42 +34,87 @@ export default class GameScene extends Phaser.Scene {
     // this.player1 = new HumanPlayer(this.physics, 30, this);
 
     //Set up player1 as computer
-    this.player1 = new ComputerPlayer(this.physics, 30, this.ball);
+    this.player1 = new ComputerPlayer(this.physics, 30, this.ball, "left");
 
     // this.player2 = this.createPlayer(770);
-    this.player2 = new ComputerPlayer(this.physics, 770, this.ball);
+    this.player2 = new ComputerPlayer(this.physics, 770, this.ball, "right");
 
     //creates boundary objects
-    const topBoundary = this.createBoundary(400, 0);
-    const bottomBoundary = this.createBoundary(400, 399);
+    const topBoundary = this.createBoundary(400, 0, 800, 10);
+    const bottomBoundary = this.createBoundary(400, 399, 800, 10);
+    const leftBoundary = this.createBoundary(0, 200, 1, 400);
+    const rightBoundary = this.createBoundary(799, 200, 1, 400);
 
     //Creates Sequencers
 
+    const topSeqDisplay = new SequencerDisplay(100, 100, 5, this);
     const topSeq = new Sequencer(
       ["c4", "d4", "e4", "g4", "a4"],
       0,
       playNote,
-      "8n"
+      "8n",
+      topSeqDisplay
     );
+
+    // this.add.rectangle(100, 100, 20, 20, 0x6666ff);
+    const bottomSeqDisplay = new SequencerDisplay(100, 130, 5, this);
     const bottomSeq = new Sequencer(
       ["c4", "d4", "e4", "g4", "a4"],
       2,
       playNote,
-      "8n"
+      "8n",
+      bottomSeqDisplay
     );
-
+    const leftSeqDisplay = new SequencerDisplay(100, 160, 4, this);
+    const leftPaddleSeq = new Sequencer(
+      ["c3", "d3", "c3", "a3"],
+      1,
+      playNote,
+      "4n",
+      leftSeqDisplay
+    );
+    const rightSeqDisplay = new SequencerDisplay(100, 190, 4, this);
+    const rightPaddleSeq = new Sequencer(
+      ["a6", "d6", "a6", "d6"],
+      1,
+      playNote,
+      "4n",
+      rightSeqDisplay
+    );
+    const leftBoundarySeqDisplay = new SequencerDisplay(100, 220, 3, this);
+    const leftBoundarySeq = new Sequencer(
+      ["a2", "e2", "c3"],
+      1,
+      playNote,
+      "4n",
+      leftBoundarySeqDisplay
+    );
+    const rightBoundarySeqDisplay = new SequencerDisplay(100, 250, 3, this);
+    const rightBoundarySeq = new Sequencer(
+      ["a2", "g2", "e3"],
+      1,
+      playNote,
+      "4n",
+      rightBoundarySeqDisplay
+    );
     // Adds colliders for paddle and ball with a callback function that triggers the synthesizer
     this.physics.add.collider(
       this.player1.sprite,
       this.ball,
-      () => this.ballCollision(this.player1.sprite),
+      () => {
+        this.ballCollision(this.player1.sprite);
+        leftPaddleSeq.playNext();
+      },
       null,
       this
     );
     this.physics.add.collider(
       this.player2.sprite,
       this.ball,
-      () => this.ballCollision(this.player2.sprite),
+      () => {
+        this.ballCollision(this.player2.sprite);
+        rightPaddleSeq.playNext();
+      },
       null,
       this
     );
@@ -90,19 +135,38 @@ export default class GameScene extends Phaser.Scene {
       this
     );
 
+    //Add overlaps for left and right world boundary
+    this.physics.add.collider(
+      leftBoundary,
+      this.ball,
+      () => {
+        leftBoundarySeq.playNext();
+        this.resetGame();
+      },
+      null,
+      this
+    );
+
+    this.physics.add.collider(
+      rightBoundary,
+      this.ball,
+      () => {
+        rightBoundarySeq.playNext();
+        this.resetGame();
+      },
+      null,
+      this
+    );
+
     //Sets up ScoreLabels
     this.player1ScoreLabel = this.createScoreLabel(10, 10, 0);
     this.player2ScoreLabel = this.createScoreLabel(775, 10, 0);
   }
 
   update() {
-    //Check for player input
-    // this.checkPlayerInput(this.player1Input, this.player1);
     this.player1.movePlayer();
 
     this.player2.movePlayer();
-    //Moves the AI
-    // this.moveAi(this.player2);
 
     if (this.ball.x >= 795) {
       this.player1ScoreLabel.add(1);
@@ -149,9 +213,9 @@ export default class GameScene extends Phaser.Scene {
     );
   }
 
-  createBoundary(x, y) {
+  createBoundary(x, y, width, height) {
     const boundary = this.physics.add.sprite(x, y);
-    boundary.setSize(800, 10);
+    boundary.setSize(width, height);
     boundary.setImmovable(true);
     boundary.body.setAllowGravity(false);
     return boundary;

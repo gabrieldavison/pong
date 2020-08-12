@@ -1,9 +1,11 @@
 class Sequencer {
-  constructor(sequence, startNote = 0, playNote, noteLength) {
+  constructor(sequence, startNote, playNote, noteLength, display) {
     this.sequence = sequence;
     this.noteLength = noteLength;
     this.playNote = playNote;
     this.stepCounter = startNote;
+    this.display = display;
+    this.setInitialStepDisplay();
   }
 
   playNext() {
@@ -13,6 +15,11 @@ class Sequencer {
     } else {
       this.stepCounter += 1;
     }
+    this.display.activateStep(this.stepCounter);
+  }
+
+  setInitialStepDisplay() {
+    this.display.activateStep(this.stepCounter);
   }
 }
 export default Sequencer;
