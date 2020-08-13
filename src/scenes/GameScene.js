@@ -5,6 +5,14 @@ import Sequencer from "../sound/sequencer";
 import HumanPlayer from "../helpers/human-player";
 import ComputerPlayer from "../helpers/computer-player";
 import SequencerDisplay from "../helpers/sequencer-display";
+import KeyRow from "../helpers/keyRow";
+import Controller from "../helpers/controller";
+import scaleValues from "../helpers/scale-values";
+
+//Global Variables
+
+let ballVelocity = 200;
+
 export default class GameScene extends Phaser.Scene {
   constructor() {
     super("game-scene");
@@ -13,6 +21,8 @@ export default class GameScene extends Phaser.Scene {
     this.player2 = undefined;
 
     this.ball = undefined;
+
+    this.controller = undefined;
 
     this.player1Input = { up: undefined, down: undefined };
     this.player2Input = { up: undefined, down: undefined };
@@ -27,6 +37,9 @@ export default class GameScene extends Phaser.Scene {
   }
 
   create() {
+    //Creates controller for speeds
+    this.controller = new Controller(300, 300, this);
+
     //Creates game objects
     this.ball = this.createBall();
 
@@ -141,6 +154,7 @@ export default class GameScene extends Phaser.Scene {
       this.ball,
       () => {
         leftBoundarySeq.playNext();
+        this.player2ScoreLabel.add(1);
         this.resetGame();
       },
       null,
@@ -152,6 +166,7 @@ export default class GameScene extends Phaser.Scene {
       this.ball,
       () => {
         rightBoundarySeq.playNext();
+        this.player1ScoreLabel.add(1);
         this.resetGame();
       },
       null,
@@ -160,7 +175,7 @@ export default class GameScene extends Phaser.Scene {
 
     //Sets up ScoreLabels
     this.player1ScoreLabel = this.createScoreLabel(10, 10, 0);
-    this.player2ScoreLabel = this.createScoreLabel(775, 10, 0);
+    this.player2ScoreLabel = this.createScoreLabel(750, 10, 0);
   }
 
   update() {
@@ -168,12 +183,25 @@ export default class GameScene extends Phaser.Scene {
 
     this.player2.movePlayer();
 
-    if (this.ball.x >= 795) {
+    if (this.ball.x >= 790) {
       this.player1ScoreLabel.add(1);
       this.resetGame();
-    } else if (this.ball.x <= 5) {
+    } else if (this.ball.x <= 10) {
       this.player2ScoreLabel.add(1);
       this.resetGame();
+    }
+    const pointer = this.input.activePointer;
+    if (pointer.isDown) {
+      this.controller.shape.x = pointer.x;
+      this.controller.shape.y = pointer.y;
+      ballVelocity = Math.round(
+        scaleValues(this.controller.shape.y, 0, 400, 2000, 10)
+      );
+      if (this.ball.body.velocity.x > 0) {
+        this.ball.setVelocityX(ballVelocity);
+      } else if (this.ball.body.velocity.x < 0) {
+        this.ball.setVelocityX(ballVelocity * -1);
+      }
     }
   }
 
@@ -181,7 +209,7 @@ export default class GameScene extends Phaser.Scene {
     const ball = this.physics.add.sprite(400, 200, "ball");
     ball.body.setAllowGravity(false);
     ball.setCollideWorldBounds(true);
-    ball.setVelocityX(Math.random() > 0.5 ? -200 : 200);
+    ball.setVelocityX(Math.random() > 0.5 ? -1 * ballVelocity : ballVelocity);
     ball.setVelocityY(Phaser.Math.Between(-100, 100));
     ball.setBounce(1);
     return ball;
@@ -192,7 +220,9 @@ export default class GameScene extends Phaser.Scene {
     this.player2.y = 200;
     this.ball.x = 400;
     this.ball.y = 200;
-    this.ball.setVelocityX(Math.random() > 0.5 ? -200 : 200);
+    this.ball.setVelocityX(
+      Math.random() > 0.5 ? -1 * ballVelocity : ballVelocity
+    );
     this.ball.setVelocityY(Phaser.Math.Between(-100, 100));
   }
 
@@ -207,10 +237,10 @@ export default class GameScene extends Phaser.Scene {
 
   ballCollision(player) {
     this.ball.setVelocityY(Math.random() * 50 + player.body.velocity.y);
-    this.ball.setVelocityX(
-      //add 10% to ball velocity every time it collides with player
-      (this.ball.body.velocity.x += 0.1 * this.ball.body.velocity.x)
-    );
+    // this.ball.setVelocityX(
+    //   //add 10% to ball velocity every time it collides with player
+    //   (this.ball.body.velocity.x += 0.1 * this.ball.body.velocity.x)
+    // );
   }
 
   createBoundary(x, y, width, height) {

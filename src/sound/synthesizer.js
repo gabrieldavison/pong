@@ -11,7 +11,6 @@ const now = Tone.now();
 
 //Triggers a note immediately
 function playNote(note, length) {
-  console.log("note");
   synth.triggerAttackRelease(note, length);
 }
 
