@@ -12,20 +12,20 @@ class ComputerPlayer extends Player {
       this.sideMultiplier = -1;
     }
   }
-  movePlayer() {
+  movePlayer(velocity) {
     if (this.side === "left") {
       if (this.ball.y > this.sprite.y + 40 && this.ball.x < 400) {
-        this.sprite.setVelocityY(200);
+        this.sprite.setVelocityY(velocity);
       } else if (this.ball.y < this.sprite.y - 40 && this.ball.x < 400) {
-        this.sprite.setVelocityY(-200);
+        this.sprite.setVelocityY(-1 * velocity);
       } else if (this.ball.x > 400) {
         this.sprite.setVelocityY(0);
       }
     } else if (this.side === "right") {
       if (this.ball.y > this.sprite.y + 40 && this.ball.x > 400) {
-        this.sprite.setVelocityY(200);
+        this.sprite.setVelocityY(velocity);
       } else if (this.ball.y < this.sprite.y - 40 && this.ball.x > 400) {
-        this.sprite.setVelocityY(-200);
+        this.sprite.setVelocityY(-1 * velocity);
       } else if (this.ball.x < 400) {
         this.sprite.setVelocityY(0);
       }

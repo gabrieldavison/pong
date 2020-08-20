@@ -2,6 +2,7 @@ import Phaser from "phaser";
 
 import HelloWorldScene from "./scenes/HelloWorldScene";
 import GameScene from "./scenes/GameScene";
+import SequencerSetup from "./scenes/SequencerSetup";
 
 const config = {
   type: Phaser.AUTO,
@@ -17,7 +18,7 @@ const config = {
     },
   },
 
-  scene: [GameScene, HelloWorldScene],
+  scene: [SequencerSetup, GameScene, HelloWorldScene],
 };
 
 export default new Phaser.Game(config);

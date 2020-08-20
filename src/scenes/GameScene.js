@@ -13,6 +13,9 @@ import scaleValues from "../helpers/scale-values";
 
 let ballVelocity = 200;
 
+let player1Velocity = 500;
+let player2Velocity = 500;
+
 export default class GameScene extends Phaser.Scene {
   constructor() {
     super("game-scene");
@@ -29,6 +32,21 @@ export default class GameScene extends Phaser.Scene {
 
     this.player1ScoreLabel = undefined;
     this.player2ScoreLabel = undefined;
+
+    this.leftBoundaryNotes = undefined;
+    this.rightBoundaryNotes = undefined;
+    this.topBoundaryNotes = undefined;
+    this.bottomBoundaryNotes = undefined;
+    this.leftPaddleNotes = undefined;
+    this.rightPaddleNotes = undefined;
+  }
+  init(data) {
+    this.leftBoundaryNotes = data.leftBoundary;
+    this.rightBoundaryNotes = data.rightBoundary;
+    this.topBoundaryNotes = data.topBoundary;
+    this.bottomBoundaryNotes = data.bottomBoundary;
+    this.leftPaddleNotes = data.leftPaddle;
+    this.rightPaddleNotes = data.rightPaddle;
   }
 
   preload() {
@@ -53,70 +71,117 @@ export default class GameScene extends Phaser.Scene {
     this.player2 = new ComputerPlayer(this.physics, 770, this.ball, "right");
 
     //creates boundary objects
-    const topBoundary = this.createBoundary(400, 0, 800, 10);
-    const bottomBoundary = this.createBoundary(400, 399, 800, 10);
+    const topBoundary = this.createBoundary(400, 0, 900, 20);
+    const bottomBoundary = this.createBoundary(400, 400, 900, 20);
     const leftBoundary = this.createBoundary(0, 200, 1, 400);
     const rightBoundary = this.createBoundary(799, 200, 1, 400);
 
     //Creates Sequencers
+    if (this.topBoundaryNotes.length > 0) {
+      var topSeqDisplay = new SequencerDisplay(
+        100,
+        100,
+        this.topBoundaryNotes.length,
+        this
+      );
+      var topSeq = new Sequencer(
+        this.topBoundaryNotes,
+        0,
+        playNote,
+        "8n",
+        topSeqDisplay
+      );
+    }
 
-    const topSeqDisplay = new SequencerDisplay(100, 100, 5, this);
-    const topSeq = new Sequencer(
-      ["c4", "d4", "e4", "g4", "a4"],
-      0,
-      playNote,
-      "8n",
-      topSeqDisplay
-    );
+    if (this.bottomBoundaryNotes.length > 0) {
+      var bottomSeqDisplay = new SequencerDisplay(
+        100,
+        130,
+        this.bottomBoundaryNotes.length,
+        this
+      );
+      var bottomSeq = new Sequencer(
+        this.bottomBoundaryNotes,
+        2,
+        playNote,
+        "8n",
+        bottomSeqDisplay
+      );
+    }
 
-    // this.add.rectangle(100, 100, 20, 20, 0x6666ff);
-    const bottomSeqDisplay = new SequencerDisplay(100, 130, 5, this);
-    const bottomSeq = new Sequencer(
-      ["c4", "d4", "e4", "g4", "a4"],
-      2,
-      playNote,
-      "8n",
-      bottomSeqDisplay
-    );
-    const leftSeqDisplay = new SequencerDisplay(100, 160, 4, this);
-    const leftPaddleSeq = new Sequencer(
-      ["c3", "d3", "c3", "a3"],
-      1,
-      playNote,
-      "4n",
-      leftSeqDisplay
-    );
-    const rightSeqDisplay = new SequencerDisplay(100, 190, 4, this);
-    const rightPaddleSeq = new Sequencer(
-      ["a6", "d6", "a6", "d6"],
-      1,
-      playNote,
-      "4n",
-      rightSeqDisplay
-    );
-    const leftBoundarySeqDisplay = new SequencerDisplay(100, 220, 3, this);
-    const leftBoundarySeq = new Sequencer(
-      ["a2", "e2", "c3"],
-      1,
-      playNote,
-      "4n",
-      leftBoundarySeqDisplay
-    );
-    const rightBoundarySeqDisplay = new SequencerDisplay(100, 250, 3, this);
-    const rightBoundarySeq = new Sequencer(
-      ["a2", "g2", "e3"],
-      1,
-      playNote,
-      "4n",
-      rightBoundarySeqDisplay
-    );
+    if (this.leftPaddleNotes.length > 0) {
+      var leftSeqDisplay = new SequencerDisplay(
+        100,
+        160,
+        this.leftPaddleNotes.length,
+        this
+      );
+      var leftPaddleSeq = new Sequencer(
+        this.leftPaddleNotes,
+        1,
+        playNote,
+        "4n",
+        leftSeqDisplay
+      );
+    }
+
+    if (this.rightPaddleNotes.length > 0) {
+      var rightSeqDisplay = new SequencerDisplay(
+        100,
+        190,
+        this.rightPaddleNotes.length,
+        this
+      );
+      var rightPaddleSeq = new Sequencer(
+        this.rightPaddleNotes,
+        1,
+        playNote,
+        "4n",
+        rightSeqDisplay
+      );
+    }
+
+    if (this.leftBoundaryNotes.length > 0) {
+      var leftBoundarySeqDisplay = new SequencerDisplay(
+        100,
+        220,
+        this.leftBoundaryNotes.length,
+        this
+      );
+      var leftBoundarySeq = new Sequencer(
+        this.leftBoundaryNotes,
+        1,
+        playNote,
+        "4n",
+        leftBoundarySeqDisplay
+      );
+    }
+
+    if (this.rightBoundaryNotes.length > 0) {
+      var rightBoundarySeqDisplay = new SequencerDisplay(
+        100,
+        250,
+        this.rightBoundaryNotes.length,
+        this
+      );
+      var rightBoundarySeq = new Sequencer(
+        this.rightBoundaryNotes,
+        1,
+        playNote,
+        "4n",
+        rightBoundarySeqDisplay
+      );
+    }
+
     // Adds colliders for paddle and ball with a callback function that triggers the synthesizer
     this.physics.add.collider(
       this.player1.sprite,
       this.ball,
       () => {
         this.ballCollision(this.player1.sprite);
-        leftPaddleSeq.playNext();
+        if (this.leftPaddleNotes.length > 0) {
+          leftPaddleSeq.playNext();
+        }
       },
       null,
       this
@@ -126,7 +191,9 @@ export default class GameScene extends Phaser.Scene {
       this.ball,
       () => {
         this.ballCollision(this.player2.sprite);
-        rightPaddleSeq.playNext();
+        if (this.rightPaddleNotes.length > 0) {
+          rightPaddleSeq.playNext();
+        }
       },
       null,
       this
@@ -136,14 +203,22 @@ export default class GameScene extends Phaser.Scene {
     this.physics.add.collider(
       topBoundary,
       this.ball,
-      () => topSeq.playNext(),
+      () => {
+        if (this.topBoundaryNotes.length > 0) {
+          topSeq.playNext();
+        }
+      },
       null,
       this
     );
     this.physics.add.collider(
       bottomBoundary,
       this.ball,
-      () => bottomSeq.playNext(),
+      () => {
+        if (this.bottomBoundaryNotes.length > 0) {
+          bottomSeq.playNext();
+        }
+      },
       null,
       this
     );
@@ -153,7 +228,9 @@ export default class GameScene extends Phaser.Scene {
       leftBoundary,
       this.ball,
       () => {
-        leftBoundarySeq.playNext();
+        if (this.leftBoundaryNotes.length > 0) {
+          leftBoundarySeq.playNext();
+        }
         this.player2ScoreLabel.add(1);
         this.resetGame();
       },
@@ -165,7 +242,9 @@ export default class GameScene extends Phaser.Scene {
       rightBoundary,
       this.ball,
       () => {
-        rightBoundarySeq.playNext();
+        if (this.rightBoundaryNotes.length > 0) {
+          rightBoundarySeq.playNext();
+        }
         this.player1ScoreLabel.add(1);
         this.resetGame();
       },
@@ -176,13 +255,27 @@ export default class GameScene extends Phaser.Scene {
     //Sets up ScoreLabels
     this.player1ScoreLabel = this.createScoreLabel(10, 10, 0);
     this.player2ScoreLabel = this.createScoreLabel(750, 10, 0);
+
+    //Set up edit button
+    const editButton = this.add.text(720, 360, "Edit", { fontSize: "30px" });
+    editButton.setInteractive().on("pointerdown", () => {
+      this.scene.start("SequencerSetup", {
+        leftBoundary: this.leftBoundaryNotes,
+        rightBoundary: this.rightBoundaryNotes,
+        topBoundary: this.topBoundaryNotes,
+        bottomBoundary: this.bottomBoundaryNotes,
+        leftPaddle: this.leftPaddleNotes,
+        rightPaddle: this.rightPaddleNotes,
+      });
+    });
   }
 
   update() {
-    this.player1.movePlayer();
+    this.player1.movePlayer(player1Velocity);
 
-    this.player2.movePlayer();
+    this.player2.movePlayer(player2Velocity);
 
+    //Increments score
     if (this.ball.x >= 790) {
       this.player1ScoreLabel.add(1);
       this.resetGame();
@@ -192,11 +285,27 @@ export default class GameScene extends Phaser.Scene {
     }
     const pointer = this.input.activePointer;
     if (pointer.isDown) {
+      //Moves controller to pointer
       this.controller.shape.x = pointer.x;
       this.controller.shape.y = pointer.y;
+
+      //Sets ball velocity to a new value dependent on position of pointer
       ballVelocity = Math.round(
         scaleValues(this.controller.shape.y, 0, 400, 2000, 10)
       );
+
+      //Sets velocity of both players depending on pointer y position
+      player1Velocity = Math.round(
+        scaleValues(this.controller.shape.y, 0, 400, 2000, 10)
+      );
+      player2Velocity = Math.round(
+        scaleValues(this.controller.shape.y, 0, 400, 2000, 10)
+      );
+
+      //Modifies player velocities depending on pointer x position to give one of them an advantage if cursor is on their size
+      player1Velocity *= scaleValues(this.controller.shape.x, 0, 800, 1.5, 0.2);
+      player2Velocity *= scaleValues(this.controller.shape.x, 0, 800, 0.2, 1.5);
+
       if (this.ball.body.velocity.x > 0) {
         this.ball.setVelocityX(ballVelocity);
       } else if (this.ball.body.velocity.x < 0) {
@@ -211,7 +320,7 @@ export default class GameScene extends Phaser.Scene {
     ball.setCollideWorldBounds(true);
     ball.setVelocityX(Math.random() > 0.5 ? -1 * ballVelocity : ballVelocity);
     ball.setVelocityY(Phaser.Math.Between(-100, 100));
-    ball.setBounce(1);
+    ball.setBounce(1, 1);
     return ball;
   }
 
@@ -236,7 +345,10 @@ export default class GameScene extends Phaser.Scene {
   }
 
   ballCollision(player) {
-    this.ball.setVelocityY(Math.random() * 50 + player.body.velocity.y);
+    if (player.body.velocity.y === 0) {
+      this.ball.setVelocityY(Math.random() * 20);
+    }
+    this.ball.setVelocityY(Math.random() * 100 + player.body.velocity.y);
     // this.ball.setVelocityX(
     //   //add 10% to ball velocity every time it collides with player
     //   (this.ball.body.velocity.x += 0.1 * this.ball.body.velocity.x)
@@ -248,6 +360,7 @@ export default class GameScene extends Phaser.Scene {
     boundary.setSize(width, height);
     boundary.setImmovable(true);
     boundary.body.setAllowGravity(false);
+
     return boundary;
   }
 }
