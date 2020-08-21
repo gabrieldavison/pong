@@ -39,14 +39,17 @@ export default class GameScene extends Phaser.Scene {
     this.bottomBoundaryNotes = undefined;
     this.leftPaddleNotes = undefined;
     this.rightPaddleNotes = undefined;
+
+    this.editSceneData = undefined;
   }
   init(data) {
-    this.leftBoundaryNotes = data.leftBoundary;
-    this.rightBoundaryNotes = data.rightBoundary;
-    this.topBoundaryNotes = data.topBoundary;
-    this.bottomBoundaryNotes = data.bottomBoundary;
-    this.leftPaddleNotes = data.leftPaddle;
-    this.rightPaddleNotes = data.rightPaddle;
+    this.leftBoundaryNotes = this.parseNotes(data.leftBoundary);
+    this.rightBoundaryNotes = this.parseNotes(data.rightBoundary);
+    this.topBoundaryNotes = this.parseNotes(data.topBoundary);
+    this.bottomBoundaryNotes = this.parseNotes(data.bottomBoundary);
+    this.leftPaddleNotes = this.parseNotes(data.leftPaddle);
+    this.rightPaddleNotes = this.parseNotes(data.rightPaddle);
+    this.editSceneData = data;
   }
 
   preload() {
@@ -260,12 +263,12 @@ export default class GameScene extends Phaser.Scene {
     const editButton = this.add.text(720, 360, "Edit", { fontSize: "30px" });
     editButton.setInteractive().on("pointerdown", () => {
       this.scene.start("SequencerSetup", {
-        leftBoundary: this.leftBoundaryNotes,
-        rightBoundary: this.rightBoundaryNotes,
-        topBoundary: this.topBoundaryNotes,
-        bottomBoundary: this.bottomBoundaryNotes,
-        leftPaddle: this.leftPaddleNotes,
-        rightPaddle: this.rightPaddleNotes,
+        leftBoundary: this.editSceneData.leftBoundary,
+        rightBoundary: this.editSceneData.rightBoundary,
+        topBoundary: this.editSceneData.topBoundary,
+        bottomBoundary: this.editSceneData.bottomBoundary,
+        leftPaddle: this.editSceneData.leftPaddle,
+        rightPaddle: this.editSceneData.rightPaddle,
       });
     });
   }
@@ -362,5 +365,21 @@ export default class GameScene extends Phaser.Scene {
     boundary.body.setAllowGravity(false);
 
     return boundary;
+  }
+
+  parseNotes(noteObject) {
+    const noteArray = [];
+    for (const note in noteObject) {
+      if (noteObject[note] !== undefined) {
+        const currentNote = note.split("");
+        let parsedNote = currentNote[0];
+        if (currentNote.length > 1) {
+          parsedNote += "#";
+        }
+        parsedNote += noteObject[note];
+        noteArray.push(parsedNote);
+      }
+    }
+    return noteArray;
   }
 }

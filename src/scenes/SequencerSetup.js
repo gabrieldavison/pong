@@ -200,6 +200,7 @@ export default class SequencerSetup extends Phaser.Scene {
   }
 
   init(data) {
+    //Need to write a function that parses the array into
     // this.noteObjects.leftBoundary = data.leftBoundary;
     // this.noteObjects.rightBoundary = data.rightBoundary;
     // this.noteObjects.topBoundary = data.topBoundary;
@@ -243,20 +244,26 @@ export default class SequencerSetup extends Phaser.Scene {
 
     //Creates text input
     const noteInput = new Keyboard(200, 200, this);
-    // console.log(this.noteObjects[this.activeArrow]);
-    // noteInput.setKeyState(this.noteObjects[this.activeArrow]);
+    noteInput.setKeyState(this.noteObjects[this.activeArrow]);
+    noteInput.reRender();
 
     //Creates Play text
     const playButton = this.add.text(720, 360, "Play", { fontSize: "30px" });
     playButton.setInteractive().on("pointerdown", () => {
       this.noteObjects[this.activeArrow] = noteInput.getKeyState();
       this.scene.start("game-scene", {
-        leftBoundary: this.parseNotes(this.noteObjects.leftBoundary),
-        rightBoundary: this.parseNotes(this.noteObjects.rightBoundary),
-        topBoundary: this.parseNotes(this.noteObjects.topBoundary),
-        bottomBoundary: this.parseNotes(this.noteObjects.bottomBoundary),
-        leftPaddle: this.parseNotes(this.noteObjects.leftPaddle),
-        rightPaddle: this.parseNotes(this.noteObjects.rightPaddle),
+        // leftBoundary: this.parseNotes(this.noteObjects.leftBoundary),
+        // rightBoundary: this.parseNotes(this.noteObjects.rightBoundary),
+        // topBoundary: this.parseNotes(this.noteObjects.topBoundary),
+        // bottomBoundary: this.parseNotes(this.noteObjects.bottomBoundary),
+        // leftPaddle: this.parseNotes(this.noteObjects.leftPaddle),
+        // rightPaddle: this.parseNotes(this.noteObjects.rightPaddle),
+        leftBoundary: this.noteObjects.leftBoundary,
+        rightBoundary: this.noteObjects.rightBoundary,
+        topBoundary: this.noteObjects.topBoundary,
+        bottomBoundary: this.noteObjects.bottomBoundary,
+        leftPaddle: this.noteObjects.leftPaddle,
+        rightPaddle: this.noteObjects.rightPaddle,
       });
     });
   }
