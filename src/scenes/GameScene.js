@@ -64,9 +64,6 @@ export default class GameScene extends Phaser.Scene {
     //Creates game objects
     this.ball = this.createBall();
 
-    //Set up player 1 as human
-    // this.player1 = new HumanPlayer(this.physics, 30, this);
-
     //Set up player1 as computer
     this.player1 = new ComputerPlayer(this.physics, 30, this.ball, "left");
 
@@ -79,7 +76,7 @@ export default class GameScene extends Phaser.Scene {
     const leftBoundary = this.createBoundary(0, 200, 1, 400);
     const rightBoundary = this.createBoundary(799, 200, 1, 400);
 
-    //Creates Sequencers
+    //Creates Sequencers if the collision zone has been assigned a note
     if (this.topBoundaryNotes.length > 0) {
       var topSeqDisplay = new SequencerDisplay(
         100,
@@ -351,11 +348,7 @@ export default class GameScene extends Phaser.Scene {
     if (player.body.velocity.y === 0) {
       this.ball.setVelocityY(Math.random() * 20);
     }
-    this.ball.setVelocityY(Math.random() * 100 + player.body.velocity.y);
-    // this.ball.setVelocityX(
-    //   //add 10% to ball velocity every time it collides with player
-    //   (this.ball.body.velocity.x += 0.1 * this.ball.body.velocity.x)
-    // );
+    this.ball.setVelocityY(Math.random() * 200 + player.body.velocity.y);
   }
 
   createBoundary(x, y, width, height) {
