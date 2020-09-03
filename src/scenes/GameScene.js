@@ -58,6 +58,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   create() {
+    this.physics.world.setFPS(180);
     //Creates controller for speeds
     this.controller = new Controller(300, 300, this);
 
